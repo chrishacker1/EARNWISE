@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Firebase App (core) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
+
+    <!-- Firebase Authentication -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
+
+    <title>EarnWise - Your Guide to Online Income</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>tailwind.config = { theme: { extend: { colors: { primary: '#4F46E5', secondary: '#10B981' }, borderRadius: { 'none': '0px', 'sm': '4px', DEFAULT: '8px', 'md': '12px', 'lg': '16px', 'xl': '20px', '2xl': '24px', '3xl': '32px', 'full': '9999px', 'button': '8px' } } } }</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+    <style>
+        :where([class^="ri-"])::before {
+            content: "\f3c2";
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .hero-section {
+            background-image: url('earnwise.jpg');
+            background-size: cover;
+            background-position: center right;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .newsletter-input:focus {
+            outline: none;
+            border-color: #4F46E5;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <a href="#" class="text-2xl font-['Pacifico'] text-primary">EarnWise</a>
+            <nav class="hidden md:flex space-x-8">
+                <a href="#Home" class="text-gray-700 hover:text-primary font-medium">Home</a>
+                <a href="#Method" class="text-gray-700 hover:text-primary font-medium">Earning Methods</a>
+                <a href="#Resources" class="text-gray-700 hover:text-primary font-medium">Resources</a>
+                <a href="#Stories" class="text-gray-700 hover:text-primary font-medium">Success Stories</a>
+                <a href="#About" class="text-gray-700 hover:text-primary font-medium">About</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <button class="text-gray-700 hover:text-primary hidden md:flex items-center">
+                    <div class="w-6 h-6 flex items-center justify-center">
+                        <i class="ri-search-line ri-lg"></i>
+                    </div>
+                </button>
+                <button id="signInButton"
+                    class="bg-white text-primary border border-primary px-4 py-2 rounded-button font-medium hover:bg-gray-50 whitespace-nowrap">Sign
+                    In</button>
+                <div id="signInModal"
+                    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+                    <div class="bg-white rounded-lg w-full max-w-md p-8 relative">
+                        <button id="closeSignInModal" class="absolute right-4 top-4 text-gray-500 hover:text-gray-700">
+                            <div class="w-6 h-6 flex items-center justify-center">
+                                <i class="ri-close-line ri-lg"></i>
+                            </div>
+                        </button>
+                        <h2 class="text-2xl font-bold text-gray-900 mb-6">Sign In</h2>
+                        <form id="signInForm" class="space-y-4">
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                <input type="email" id="email" name="email" required
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm"
+                                    placeholder="Enter your email">
+                            </div>
+                            <div>
+                                <label for="password"
+                                    class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                                <input type="password" id="password" name="password" required
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm"
+                                    placeholder="Enter your password">
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="remember" name="remember"
+                                        class="w-4 h-4 border-gray-300 rounded text-primary focus:ring-primary/20">
+                                    <label for="remember" class="ml-2 text-sm text-gray-600">Remember me</label>
+                                </div>
+                                <a href="#" id="forgotPasswordLink"
+                                    class="text-sm text-primary hover:text-primary/80">Forgot password?</a>
+                            </div>
+                            <div id="signInError" class="hidden">
+                                <p class="text-red-500 text-sm"></p>
+                            </div>
+                            <button type="submit"
+                                class="w-full bg-primary text-white py-2 px-4 rounded-button font-medium hover:bg-primary/90 whitespace-nowrap">Sign
+                                In</button>
+                        </form>
+                        <form id="resetPasswordForm" class="space-y-4 hidden">
+                            <h2 class="text-2xl font-bold text-gray-900 mb-6">Reset Password</h2>
+                            <p class="text-gray-600 mb-6">Enter your email address and we'll send you instructions to
+                                reset your password.</p>
+                            <div>
+                                <label for="resetEmail"
+                                    class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                <input type="email" id="resetEmail" name="resetEmail" required
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm"
+                                    placeholder="Enter your email">
+                            </div>
+                            <div id="resetError" class="hidden">
+                                <p class="text-red-500 text-sm"></p>
+                            </div>
+                            <button type="submit"
+                                class="w-full bg-primary text-white py-2 px-4 rounded-button font-medium hover:bg-primary/90 whitespace-nowrap">Send
+                                Reset Instructions</button>
+                            <button type="button" id="backToSignIn"
+                                class="w-full mt-2 bg-white text-gray-700 py-2 px-4 rounded-button font-medium border border-gray-300 hover:bg-gray-50 whitespace-nowrap">Back
+                                to Sign In</button>
+                        </form>
+                        <div id="resetConfirmation" class="text-center py-8 hidden">
+                            <div
+                                class="w-12 h-12 bg-green-100 rounded-full mx-auto flex items-center justify-center mb-4">
+                                <div class="w-6 h-6 flex items-center justify-center text-green-500">
+                                    <i class="ri-check-line ri-lg"></i>
+                                </div>
+                            </div>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Check Your Email</h3>
+                            <p class="text-gray-600 mb-6">We've sent password reset instructions to your email address.
+                            </p>
+                            <button type="button" id="backToSignInFromConfirm"
+                                class="bg-primary text-white py-2 px-4 rounded-button font-medium hover:bg-primary/90 whitespace-nowrap">Back
+                                to Sign In</button>
+                        </div>
+                        <p class="mt-4 text-center text-sm text-gray-600">
+                            Don't have an account?
+                            <a href="#" id="registerLink"
+                                class="text-primary hover:text-primary/80 font-medium">Register now</a>
+                        </p>
+                    </div>
+                    <form id="registerForm" class="space-y-4 hidden">
+                        <h2 class="text-2xl font-bold text-gray-900 mb-6">Create Account</h2>
+                        <div>
+                            <label for="registerName" class="block text-sm font-medium text-gray-700 mb-1">Full
+                                Name</label>
+                            <input type="text" id="registerName" name="registerName" required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm"
+                                placeholder="Enter your full name">
+                        </div>
+                        <div>
+                            <label for="registerEmail"
+                                class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                            <input type="email" id="registerEmail" name="registerEmail" required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm"
+                                placeholder="Enter your email">
+                        </div>
+                        <div>
+                            <label for="registerPassword"
+                                class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                            <input type="password" id="registerPassword" name="registerPassword" required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm"
+                                placeholder="Create a password">
+                        </div>
+                        <div>
+                            <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1">Confirm
+                                Password</label>
+                            <input type="password" id="confirmPassword" name="confirmPassword" required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm"
+                                placeholder="Confirm your password">
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="acceptTerms" name="acceptTerms" required
+                                class="w-4 h-4 border-gray-300 rounded text-primary focus:ring-primary/20">
+                            <label for="acceptTerms" class="ml-2 text-sm text-gray-600">I accept the <a href="#"
+                                    class="text-primary hover:text-primary/80">Terms of Service</a> and <a href="#"
+                                    class="text-primary hover:text-primary/80">Privacy Policy</a></label>
+                        </div>
+                        <div id="registerError" class="hidden">
+                            <p class="text-red-500 text-sm"></p>
+                        </div>
+                        <button type="submit"
+                            class="w-full bg-primary text-white py-2 px-4 rounded-button font-medium hover:bg-primary/90 whitespace-nowrap">Create
+                            Account</button>
+                        <p class="text-center text-sm text-gray-600">
+                            Already have an account?
+                            <a href="#" id="backToSignIn" class="text-primary hover:text-primary/80 font-medium">Sign
+                                in</a>
+                        </p>
+                    </form>
+                </div>
+            </div>
+            <button
+                class="bg-primary text-white px-4 py-2 rounded-button font-medium hover:bg-primary/90 whitespace-nowrap">Get
+                Started</button>
+            <button class="md:hidden text-gray-700">
+                <div class="w-6 h-6 flex items-center justify-center">
+                    <i class="ri-menu-line ri-lg"></i>
+                </div>
+            </button>
+        </div>
+        </div>
+    </header>
+    <!-- Hero Section -->
+    <section class="hero-section relative" id="Home">
+        <div class="absolute inset-0 bg-gradient-to-r from-white via-white/80 to-transparent"></div>
+        <div class="container mx-auto px-4 py-20 md:py-32 relative">
+            <div class="w-full max-w-2xl">
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">Turn Your Skills Into Income
+                </h1>
+                <p class="text-lg md:text-xl text-gray-700 mb-8">Discover proven ways to earn online in 2025. Whether
+                    you're looking for passive income or building a business, we've got the strategies that work.</p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <button
+                        class="bg-primary text-white px-6 py-3 rounded-button font-medium hover:bg-primary/90 whitespace-nowrap">Explore
+                        Earning Methods</button>
+                    <button
+                        class="bg-white text-gray-800 border border-gray-300 px-6 py-3 rounded-button font-medium hover:bg-gray-50 whitespace-nowrap"><a
+                            href="#Stories">Watch
+                            Success Stories</a></button>
+                </div>
+                <div class="mt-12 flex items-center space-x-8">
+                    <div class="flex flex-col">
+                        <span class="text-3xl font-bold text-primary">10k+</span>
+                        <span class="text-gray-600 text-sm">Success Stories</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-3xl font-bold text-primary">5</span>
+                        <span class="text-gray-600 text-sm">Proven Methods</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-3xl font-bold text-primary">24/7</span>
+                        <span class="text-gray-600 text-sm">Expert Support</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Earning Methods Section -->
+    <section class="py-16 md:py-24 bg-white" id="Method">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">5 Proven Ways to Earn Online</h2>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">Choose the path that matches your skills, interests,
+                    and income goals. Each method has been tested and proven effective in 2025.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Freelance Services Card -->
+                <div
+                    class="category-card bg-white rounded-lg shadow-md p-8 border border-gray-100 transition duration-300">
+                    <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+                        <div class="w-6 h-6 flex items-center justify-center text-primary">
+                            <i class="ri-user-settings-line ri-lg"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Freelance Services Marketplace</h3>
+                    <p class="text-gray-600 mb-4">Create a platform where freelancers can offer services and clients can
+                        hire talent. Focus on niche markets like student services or tech specialties.</p>
+                    <div class="flex items-center mb-6">
+                        <div class="w-5 h-5 flex items-center justify-center text-primary mr-2">
+                            <i class="ri-money-dollar-circle-line"></i>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700">Earn: 10-15% commission per transaction</span>
+                    </div>
+                    <button
+                        class="text-primary font-medium flex items-center hover:underline !rounded-button whitespace-nowrap">
+                        Learn more
+                        <div class="w-5 h-5 flex items-center justify-center ml-1">
+                            <i class="ri-arrow-right-line"></i>
+                        </div>
+                    </button>
+                </div>
+                <!-- Digital Products Store -->
+                <div
+                    class="category-card bg-white rounded-lg shadow-md p-8 border border-gray-100 transition duration-300">
+                    <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+                        <div class="w-6 h-6 flex items-center justify-center text-primary">
+                            <i class="ri-shopping-bag-3-line ri-lg"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Digital Products Store</h3>
+                    <p class="text-gray-600 mb-4">Sell templates, eBooks, scripts, design assets, or AI prompts. Create
+                        once, sell infinitely with minimal ongoing costs.</p>
+                    <div class="flex items-center mb-6">
+                        <div class="w-5 h-5 flex items-center justify-center text-primary mr-2">
+                            <i class="ri-money-dollar-circle-line"></i>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700">Earn: 100% profit after platform fees</span>
+                    </div>
+                    <button
+                        class="text-primary font-medium flex items-center hover:underline !rounded-button whitespace-nowrap">
+                        Learn more
+                        <div class="w-5 h-5 flex items-center justify-center ml-1">
+                            <i class="ri-arrow-right-line"></i>
+                        </div>
+                    </button>
+                </div>
+                <!-- Online Course Website -->
+                <div
+                    class="category-card bg-white rounded-lg shadow-md p-8 border border-gray-100 transition duration-300">
+                    <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+                        <div class="w-6 h-6 flex items-center justify-center text-primary">
+                            <i class="ri-book-open-line ri-lg"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Online Course Platform</h3>
+                    <p class="text-gray-600 mb-4">Share your expertise through video courses. Perfect for teaching
+                        technical skills, creative abilities, or specialized knowledge.</p>
+                    <div class="flex items-center mb-6">
+                        <div class="w-5 h-5 flex items-center justify-center text-primary mr-2">
+                            <i class="ri-money-dollar-circle-line"></i>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700">Earn: $1k-10k+ per course or subscription</span>
+                    </div>
+                    <button
+                        class="text-primary font-medium flex items-center hover:underline !rounded-button whitespace-nowrap">
+                        Learn more
+                        <div class="w-5 h-5 flex items-center justify-center ml-1">
+                            <i class="ri-arrow-right-line"></i>
+                        </div>
+                    </button>
+                </div>
+                <!-- Blog + Affiliate Marketing -->
+                <div
+                    class="category-card bg-white rounded-lg shadow-md p-8 border border-gray-100 transition duration-300">
+                    <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+                        <div class="w-6 h-6 flex items-center justify-center text-primary">
+                            <i class="ri-article-line ri-lg"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Blog + Affiliate Marketing</h3>
+                    <p class="text-gray-600 mb-4">Create valuable content and monetize through ads and affiliate links.
+                        Great for tech reviews, tutorials, and product recommendations.</p>
+                    <div class="flex items-center mb-6">
+                        <div class="w-5 h-5 flex items-center justify-center text-primary mr-2">
+                            <i class="ri-money-dollar-circle-line"></i>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700">Earn: $500-$10k+ monthly with scale</span>
+                    </div>
+                    <button
+                        class="text-primary font-medium flex items-center hover:underline !rounded-button whitespace-nowrap">
+                        Learn more
+                        <div class="w-5 h-5 flex items-center justify-center ml-1">
+                            <i class="ri-arrow-right-line"></i>
+                        </div>
+                    </button>
+                </div>
+                <!-- Gaming Website -->
+                <div
+                    class="category-card bg-white rounded-lg shadow-md p-8 border border-gray-100 transition duration-300">
+                    <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+                        <div class="w-6 h-6 flex items-center justify-center text-primary">
+                            <i class="ri-gamepad-line ri-lg"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Gaming or Tournament Platform</h3>
+                    <p class="text-gray-600 mb-4">Host competitions, tournaments or skill-based games where users can
+                        compete and earn rewards or cryptocurrency.</p>
+                    <div class="flex items-center mb-6">
+                        <div class="w-5 h-5 flex items-center justify-center text-primary mr-2">
+                            <i class="ri-money-dollar-circle-line"></i>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700">Earn: Entry fees, ads, sponsorships</span>
+                    </div>
+                    <button
+                        class="text-primary font-medium flex items-center hover:underline !rounded-button whitespace-nowrap">
+                        Learn more
+                        <div class="w-5 h-5 flex items-center justify-center ml-1">
+                            <i class="ri-arrow-right-line"></i>
+                        </div>
+                    </button>
+                </div>
+                <!-- Bonus Method -->
+                <div
+                    class="category-card bg-white rounded-lg shadow-md p-8 border border-gray-100 transition duration-300">
+                    <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+                        <div class="w-6 h-6 flex items-center justify-center text-primary">
+                            <i class="ri-rocket-line ri-lg"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">SaaS for Creators</h3>
+                    <p class="text-gray-600 mb-4">Build software tools that help content creators, freelancers or small
+                        businesses automate tasks and increase productivity.</p>
+                    <div class="flex items-center mb-6">
+                        <div class="w-5 h-5 flex items-center justify-center text-primary mr-2">
+                            <i class="ri-money-dollar-circle-line"></i>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700">Earn: Monthly subscriptions
+                            ($10-100/user)</span>
+                    </div>
+                    <button
+                        class="text-primary font-medium flex items-center hover:underline !rounded-button whitespace-nowrap">
+                        Learn more
+                        <div class="w-5 h-5 flex items-center justify-center ml-1">
+                            <i class="ri-arrow-right-line"></i>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Features Section -->
+    <section class="py-16 md:py-24 bg-gray-50" id="Resources">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Why Choose EarnWise</h2>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">We've helped thousands of entrepreneurs build
+                    successful online income streams with our proven frameworks and support.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-100">
+                    <div class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+                        <div class="w-7 h-7 flex items-center justify-center text-primary">
+                            <i class="ri-rocket-line ri-xl"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Quick to Launch</h3>
+                    <p class="text-gray-600">Our step-by-step guides and templates help you launch your earning platform
+                        in weeks, not months. We've eliminated the guesswork.</p>
+                </div>
+                <!-- Feature 2 -->
+                <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-100">
+                    <div class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+                        <div class="w-7 h-7 flex items-center justify-center text-primary">
+                            <i class="ri-shield-check-line ri-xl"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Secure & Reliable</h3>
+                    <p class="text-gray-600">Built-in security features and payment integrations that protect both you
+                        and your users. Our platforms are built for scale and reliability.</p>
+                </div>
+                <!-- Feature 3 -->
+                <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-100">
+                    <div class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+                        <div class="w-7 h-7 flex items-center justify-center text-primary">
+                            <i class="ri-customer-service-2-line ri-xl"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Expert Support</h3>
+                    <p class="text-gray-600">Access to our community of successful entrepreneurs and dedicated support
+                        team to help you overcome challenges and scale your business.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- How It Works Section -->
+    <section class="py-16 md:py-24 bg-white" id="Resources">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">How It Works</h2>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">Follow our proven process to build your online income
+                    stream in just four simple steps.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Step 1 -->
+                <div class="relative">
+                    <div
+                        class="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center mb-6 font-bold text-xl">
+                        1</div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Choose Your Method</h3>
+                    <p class="text-gray-600 mb-6">Select the earning method that best matches your skills, interests,
+                        and income goals.</p>
+                    <div class="hidden md:block absolute top-6 left-[calc(100%-12px)] w-full h-0.5 bg-gray-200 -z-10">
+                    </div>
+                </div>
+                <!-- Step 2 -->
+                <div class="relative">
+                    <div
+                        class="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center mb-6 font-bold text-xl">
+                        2</div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Build Your Platform</h3>
+                    <p class="text-gray-600 mb-6">Use our templates and guides to create your website, marketplace, or
+                        digital product store.</p>
+                    <div class="hidden md:block absolute top-6 left-[calc(100%-12px)] w-full h-0.5 bg-gray-200 -z-10">
+                    </div>
+                </div>
+                <!-- Step 3 -->
+                <div class="relative">
+                    <div
+                        class="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center mb-6 font-bold text-xl">
+                        3</div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Launch & Market</h3>
+                    <p class="text-gray-600 mb-6">Follow our marketing playbook to attract users, customers, or clients
+                        to your platform.</p>
+                    <div class="hidden md:block absolute top-6 left-[calc(100%-12px)] w-full h-0.5 bg-gray-200 -z-10">
+                    </div>
+                </div>
+                <!-- Step 4 -->
+                <div>
+                    <div
+                        class="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center mb-6 font-bold text-xl">
+                        4</div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Scale & Optimize</h3>
+                    <p class="text-gray-600 mb-6">Use our analytics and optimization tools to increase revenue and build
+                        a sustainable business.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Testimonials Section -->
+    <section class="py-16 md:py-24 bg-gray-50" id="Stories">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Success Stories</h2>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">Join thousands of entrepreneurs who have built
+                    successful online businesses with our methods.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Testimonial 1 -->
+                <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-100">
+                    <div class="flex items-center mb-4">
+                        <div class="text-primary">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-star-fill"></i>
+                            </div>
+                        </div>
+                        <div class="text-primary">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-star-fill"></i>
+                            </div>
+                        </div>
+                        <div class="text-primary">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-star-fill"></i>
+                            </div>
+                        </div>
+                        <div class="text-primary">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-star-fill"></i>
+                            </div>
+                        </div>
+                        <div class="text-primary">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-star-fill"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-6">"I launched my design template store using the Digital Products
+                        method, and I'm now making $8,500/month in passive income. The step-by-step guide made it so
+                        easy to get started."</p>
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mr-3">
+                            <div class="w-5 h-5 flex items-center justify-center text-primary">
+                                <i class="ri-user-line"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-900">Rebecca Thompson</h4>
+                            <p class="text-sm text-gray-500">UI Designer, California</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Testimonial 2 -->
+                <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-100">
+                    <div class="flex items-center mb-4">
+                        <div class="text-primary">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-star-fill"></i>
+                            </div>
+                        </div>
+                        <div class="text-primary">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-star-fill"></i>
+                            </div>
+                        </div>
+                        <div class="text-primary">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-star-fill"></i>
+                            </div>
+                        </div>
+                        <div class="text-primary">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-star-fill"></i>
+                            </div>
+                        </div>
+                        <div class="text-primary">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-star-fill"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-6">"My coding tutorial blog now generates over $12,000/month through
+                        affiliate marketing. The SEO strategies and monetization techniques were game-changers for my
+                        business."</p>
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mr-3">
+                            <div class="w-5 h-5 flex items-center justify-center text-primary">
+                                <i class="ri-user-line"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-900">Michael Chen</h4>
+                            <p class="text-sm text-gray-500">Software Developer, Toronto</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Testimonial 3 -->
+                <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-100">
+                    <div class="flex items-center mb-4">
+                        <div class="text-primary">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-star-fill"></i>
+                            </div>
+                        </div>
+                        <div class="text-primary">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-star-fill"></i>
+                            </div>
+                        </div>
+                        <div class="text-primary">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-star-fill"></i>
+                            </div>
+                        </div>
+                        <div class="text-primary">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-star-fill"></i>
+                            </div>
+                        </div>
+                        <div class="text-primary">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-star-fill"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-6">"I built a niche freelance marketplace for video editors that now
+                        processes over $50,000 in monthly transactions. The platform templates saved me months of
+                        development time."</p>
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mr-3">
+                            <div class="w-5 h-5 flex items-center justify-center text-primary">
+                                <i class="ri-user-line"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-900">Sophia Rodriguez</h4>
+                            <p class="text-sm text-gray-500">Entrepreneur, London</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- CTA Section -->
+    <section class="py-16 md:py-24 bg-primary/5" id="About">
+        <div class="container mx-auto px-4">
+            <div class="max-w-4xl mx-auto text-center">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Ready to Build Your Online Income Stream?
+                </h2>
+                <p class="text-lg text-gray-600 mb-8">Join thousands of entrepreneurs who are building successful online
+                    businesses with our proven methods and support.</p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <button
+                        class="bg-primary text-white px-8 py-4 rounded-button font-medium hover:bg-primary/90 whitespace-nowrap"><a
+                            href="#signInForm">Get
+                            Started Now</a></button>
+                    <button
+                        class="bg-white text-gray-800 border border-gray-300 px-8 py-4 rounded-button font-medium hover:bg-gray-50 whitespace-nowrap">Explore
+                        Methods</button>
+                </div>
+                <p class="text-gray-500 mt-6">No credit card required. Start with our free resources.</p>
+            </div>
+        </div>
+    </section>
+    <!-- FAQ Section -->
+    <section class="py-16 md:py-24 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">Find answers to common questions about our earning
+                    methods and platform.</p>
+            </div>
+            <div class="max-w-3xl mx-auto">
+                <div class="mb-6 border border-gray-200 rounded-lg">
+                    <button class="w-full flex justify-between items-center p-6 text-left focus:outline-none">
+                        <span class="text-lg font-medium text-gray-900">How much does it cost to get started?</span>
+                        <div class="w-5 h-5 flex items-center justify-center text-primary">
+                            <i class="ri-add-line"></i>
+                        </div>
+                    </button>
+                    <div class="px-6 pb-6">
+                        <p class="text-gray-600">Our basic resources and guides are completely free. For more advanced
+                            features and support, we offer premium plans starting at $29/month. Most entrepreneurs can
+                            get started with just the cost of domain and hosting (around $10-15/month).</p>
+                    </div>
+                </div>
+                <div class="mb-6 border border-gray-200 rounded-lg">
+                    <button class="w-full flex justify-between items-center p-6 text-left focus:outline-none">
+                        <span class="text-lg font-medium text-gray-900">How long does it take to start earning?</span>
+                        <div class="w-5 h-5 flex items-center justify-center text-primary">
+                            <i class="ri-add-line"></i>
+                        </div>
+                    </button>
+                    <div class="hidden px-6 pb-6">
+                        <p class="text-gray-600">Timeline varies by method. Digital products can generate income within
+                            weeks, while content sites may take 3-6 months to gain traction. Our guides provide
+                            realistic timelines for each method.</p>
+                    </div>
+                </div>
+                <div class="mb-6 border border-gray-200 rounded-lg">
+                    <button class="w-full flex justify-between items-center p-6 text-left focus:outline-none">
+                        <span class="text-lg font-medium text-gray-900">Do I need technical skills to get
+                            started?</span>
+                        <div class="w-5 h-5 flex items-center justify-center text-primary">
+                            <i class="ri-add-line"></i>
+                        </div>
+                    </button>
+                    <div class="hidden px-6 pb-6">
+                        <p class="text-gray-600">Not necessarily. Our templates and no-code options make it possible to
+                            launch without coding skills. For more customized solutions, basic web development knowledge
+                            is helpful but not required.</p>
+                    </div>
+                </div>
+                <div class="mb-6 border border-gray-200 rounded-lg">
+                    <button class="w-full flex justify-between items-center p-6 text-left focus:outline-none">
+                        <span class="text-lg font-medium text-gray-900">What support do you provide?</span>
+                        <div class="w-5 h-5 flex items-center justify-center text-primary">
+                            <i class="ri-add-line"></i>
+                        </div>
+                    </button>
+                    <div class="hidden px-6 pb-6">
+                        <p class="text-gray-600">We offer comprehensive documentation, video tutorials, community
+                            forums, and email support. Premium members get access to live coaching calls and priority
+                            support.</p>
+                    </div>
+                </div>
+                <div class="mb-6 border border-gray-200 rounded-lg">
+                    <button class="w-full flex justify-between items-center p-6 text-left focus:outline-none">
+                        <span class="text-lg font-medium text-gray-900">Can I run these businesses part-time?</span>
+                        <div class="w-5 h-5 flex items-center justify-center text-primary">
+                            <i class="ri-add-line"></i>
+                        </div>
+                    </button>
+                    <div class="hidden px-6 pb-6">
+                        <p class="text-gray-600">Absolutely! Many of our most successful users started part-time.
+                            Digital products and affiliate marketing are particularly well-suited for part-time
+                            entrepreneurs.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Newsletter Section -->
+    <section class="py-16 md:py-24 bg-primary/5">
+        <div class="container mx-auto px-4">
+            <div class="max-w-3xl mx-auto text-center">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Stay Updated</h2>
+                <p class="text-lg text-gray-600 mb-8">Get our latest strategies, success stories, and updates delivered
+                    to your inbox.</p>
+                <div class="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto">
+                    <input type="email" placeholder="Enter your email"
+                        class="newsletter-input flex-1 px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary/20 bg-white">
+                    <button
+                        class="bg-primary text-white px-6 py-3 rounded-button font-medium hover:bg-primary/90 whitespace-nowrap">Subscribe</button>
+                </div>
+                <p class="text-gray-500 mt-4 text-sm">We respect your privacy. Unsubscribe at any time.</p>
+            </div>
+        </div>
+    </section>
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white pt-16 pb-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+                <div>
+                    <a href="#" class="text-2xl font-['Pacifico'] text-white mb-4 inline-block">EarnWise</a>
+                    <p class="text-gray-400 mb-6">Your guide to building successful online income streams in 2025 and
+                        beyond.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <div class="w-10 h-10 flex items-center justify-center border border-gray-700 rounded-full">
+                                <i class="ri-twitter-x-line"></i>
+                            </div>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <div class="w-10 h-10 flex items-center justify-center border border-gray-700 rounded-full">
+                                <i class="ri-facebook-fill"></i>
+                            </div>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <div class="w-10 h-10 flex items-center justify-center border border-gray-700 rounded-full">
+                                <i class="ri-instagram-line"></i>
+                            </div>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <div class="w-10 h-10 flex items-center justify-center border border-gray-700 rounded-full">
+                                <i class="ri-linkedin-fill"></i>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Earning Methods</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Freelance Marketplace</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Digital Products</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Online Courses</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Affiliate Marketing</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Gaming Platform</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Resources</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Blog</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Guides</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Success Stories</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Podcast</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Tools</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Company</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-400 hover:text-white">About Us</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Contact</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Careers</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-500 mb-4 md:mb-0">© 2025 EarnWise. All rights reserved.</p>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-500 hover:text-white">Privacy</a>
+                    <a href="#" class="text-gray-500 hover:text-white">Terms</a>
+                    <a href="#" class="text-gray-500 hover:text-white">Cookies</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script id="sign-in-modal">
+        document.addEventListener('DOMContentLoaded', function () {
+            const signInButton = document.getElementById('signInButton');
+            const signInModal = document.getElementById('signInModal');
+            const closeSignInModal = document.getElementById('closeSignInModal');
+            const signInForm = document.getElementById('signInForm');
+            const registerForm = document.getElementById('registerForm');
+            const registerLink = document.getElementById('registerLink');
+            const backToSignInLink = document.getElementById('backToSignIn');
+            const registerError = document.getElementById('registerError');
+            const signInError = document.getElementById('signInError');
+            const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+            const resetPasswordForm = document.getElementById('resetPasswordForm');
+            const resetConfirmation = document.getElementById('resetConfirmation');
+            const backToSignIn = document.getElementById('backToSignIn');
+            const backToSignInFromConfirm = document.getElementById('backToSignInFromConfirm');
+            const resetError = document.getElementById('resetError');
+            function showError(element, message) {
+                element.querySelector('p').textContent = message;
+                element.classList.remove('hidden');
+            }
+            function hideError(element) {
+                element.classList.add('hidden');
+            }
+            function showSignInForm() {
+                signInForm.classList.remove('hidden');
+                resetPasswordForm.classList.add('hidden');
+                resetConfirmation.classList.add('hidden');
+                registerForm.classList.add('hidden');
+                hideError(signInError);
+                hideError(resetError);
+                hideError(registerError);
+                signInForm.reset();
+                resetPasswordForm.reset();
+                registerForm.reset();
+            }
+            function showRegisterForm() {
+                signInForm.classList.add('hidden');
+                resetPasswordForm.classList.add('hidden');
+                resetConfirmation.classList.add('hidden');
+                registerForm.classList.remove('hidden');
+                hideError(registerError);
+                registerForm.reset();
+            }
+            signInButton.addEventListener('click', () => {
+                signInModal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+                showSignInForm();
+            });
+            closeSignInModal.addEventListener('click', () => {
+                signInModal.classList.add('hidden');
+                document.body.style.overflow = '';
+                showSignInForm();
+            });
+            signInModal.addEventListener('click', (e) => {
+                if (e.target === signInModal) {
+                    signInModal.classList.add('hidden');
+                    document.body.style.overflow = '';
+                    showSignInForm();
+                }
+            });
+            forgotPasswordLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                signInForm.classList.add('hidden');
+                resetPasswordForm.classList.remove('hidden');
+                resetConfirmation.classList.add('hidden');
+                hideError(resetError);
+            });
+            backToSignIn.addEventListener('click', () => {
+                showSignInForm();
+            });
+            backToSignInFromConfirm.addEventListener('click', () => {
+                showSignInForm();
+            });
+            registerLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                showRegisterForm();
+            });
+            backToSignInLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                showSignInForm();
+            });
+            registerForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                hideError(registerError);
+                const name = document.getElementById('registerName').value.trim();
+                const email = document.getElementById('registerEmail').value.trim();
+                const password = document.getElementById('registerPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                const acceptTerms = document.getElementById('acceptTerms').checked;
+                if (!name || !email || !password || !confirmPassword) {
+                    showError(registerError, 'Please fill in all fields');
+                    return;
+                }
+                if (name.length < 2) {
+                    showError(registerError, 'Name must be at least 2 characters long');
+                    return;
+                }
+                if (!email.includes('@')) {
+                    showError(registerError, 'Please enter a valid email address');
+                    return;
+                }
+                if (password.length < 6) {
+                    showError(registerError, 'Password must be at least 6 characters long');
+                    return;
+                }
+                if (password !== confirmPassword) {
+                    showError(registerError, 'Passwords do not match');
+                    return;
+                }
+                if (!acceptTerms) {
+                    showError(registerError, 'Please accept the Terms of Service and Privacy Policy');
+                    return;
+                }
+            });
+            signInForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                hideError(signInError);
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                if (!email || !password) {
+                    showError(signInError, 'Please fill in all fields');
+                    return;
+                }
+                if (!email.includes('@')) {
+                    showError(signInError, 'Please enter a valid email address');
+                    return;
+                }
+                if (password.length < 6) {
+                    showError(signInError, 'Password must be at least 6 characters long');
+                    return;
+                }
+            });
+            resetPasswordForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                hideError(resetError);
+                const email = document.getElementById('resetEmail').value;
+                if (!email) {
+                    showError(resetError, 'Please enter your email address');
+                    return;
+                }
+                if (!email.includes('@')) {
+                    showError(resetError, 'Please enter a valid email address');
+                    return;
+                }
+                resetPasswordForm.classList.add('hidden');
+                resetConfirmation.classList.remove('hidden');
+            });
+        });
+    </script>
+    <script id="faq-accordion">
+        document.addEventListener('DOMContentLoaded', function () {
+            const faqButtons = document.querySelectorAll('.faq-button');
+            document.querySelectorAll('.mb-6.border button').forEach(button => {
+                button.addEventListener('click', function () {
+                    const content = this.nextElementSibling;
+                    const icon = this.querySelector('i');
+                    if (content.classList.contains('hidden')) {
+                        content.classList.remove('hidden');
+                        icon.classList.remove('ri-add-line');
+                        icon.classList.add('ri-subtract-line');
+                    } else {
+                        content.classList.add('hidden');
+                        icon.classList.remove('ri-subtract-line');
+                        icon.classList.add('ri-add-line');
+                    }
+                });
+            });
+        });
+
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "firebase/app";
+        import { getAnalytics } from "firebase/analytics";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyAXm3LMPEELjx2m8_OxBp9fnovkraUBCMw",
+            authDomain: "earning-87982.firebaseapp.com",
+            projectId: "earning-87982",
+            storageBucket: "earning-87982.firebasestorage.app",
+            messagingSenderId: "873657923295",
+            appId: "1:873657923295:web:0e0969603a095114b7db6a",
+            measurementId: "G-SDRZK88RL2"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+    </script>
+</body>
+
+</html>
